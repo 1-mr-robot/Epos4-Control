@@ -10,10 +10,10 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
     unsigned int ulErrorCode = 0;
 	stringstream msg;
 
-	msg << "set profile current mode, node = " << g_usNodeId<<"/n";
+	msg << "set profile current mode, node = " << g_usNodeId<<"\n";
 	LogInfo(msg.str());
 
-    msg << "move with torque = " << (long)arm_control.torque << ", node = " << g_usNodeId;
+    msg << "move with torque = " << (long)arm_control.torque << ", node = " << g_usNodeId<<"\n";
 	LogInfo(msg.str());
     
     SetCurrentMust(g_pKeyHandle,g_usNodeId,(short)arm_control.current,&ulErrorCode);
@@ -21,8 +21,7 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
     short current;
 	int position_new,current_velocity;
     get_velocity(g_pKeyHandle,g_usNodeId,&current_velocity,&ulErrorCode);
-    // msg << "velocity read = " << current_velocity << ", node = " << g_usNodeId;
-    // LogInfo(msg.str());
+
     get_current(g_pKeyHandle, g_usNodeId, &current, &ulErrorCode);
 
     // res.current = current;
@@ -30,8 +29,6 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
 	// res.velocity = pVelocityIs;
 
 	get_position(g_pKeyHandle, g_usNodeId, &position_new, &ulErrorCode);
-	// msg << "new position = " << position_new << ", node = " << g_usNodeId;
-	// LogInfo(msg.str());
 	//HaltPosition(g_pKeyHandle,g_usNodeId);
     //HaltVelocity(g_pKeyHandle,g_usNodeId);
 

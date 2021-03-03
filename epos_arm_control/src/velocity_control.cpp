@@ -13,19 +13,16 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
 	msg << "set profile velocity mode, node = " << g_usNodeId<<"\n";
 	LogInfo(msg.str());
 
-    msg << "move with velocity = " << (long)arm_control.velocity << ", node = " << g_usNodeId;
+    msg << "move with velocity = " << (long)arm_control.velocity << ", node = " << g_usNodeId<<"\n";
 	LogInfo(msg.str());
     
     MoveWithVelocity(g_pKeyHandle, g_usNodeId, (long)arm_control.velocity,&ulErrorCode);
 
 	int position_new,current_velocity;
     get_velocity(g_pKeyHandle,g_usNodeId,&current_velocity,&ulErrorCode);
-    // msg << "velocity read = " << current_velocity << ", node = " << g_usNodeId;
-    // LogInfo(msg.str());
 
 	get_position(g_pKeyHandle, g_usNodeId, &position_new, &ulErrorCode);
-	msg << "new position = " << position_new << ", node = " << g_usNodeId;
-	LogInfo(msg.str());
+
 	//HaltPosition(g_pKeyHandle,g_usNodeId);
     //HaltVelocity(g_pKeyHandle,g_usNodeId);
 

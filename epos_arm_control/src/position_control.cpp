@@ -12,18 +12,18 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
 	int absolute=1;
 	int relative=0;
 
-	msg << "set profile position mode, node = " << g_usNodeId;
+	msg << "set profile position mode, node = " << g_usNodeId<<"\n";
 	LogInfo(msg.str());
 
-    msg << "move to position = " << (long)arm_control.position << ", node = " << g_usNodeId;
+    msg << "move to position = " << (long)arm_control.position << ", node = " << g_usNodeId<<"\n";
 	LogInfo(msg.str());
     
     MoveToPosition(g_pKeyHandle, g_usNodeId, (long)arm_control.position,relative, &ulErrorCode);
 
 	int position_new;
 	get_position(g_pKeyHandle, g_usNodeId, &position_new, &ulErrorCode);
-	msg << "new position = " << position_new << ", node = " << g_usNodeId;
-	LogInfo(msg.str());
+	// msg << "new position = " << position_new << ", node = " << g_usNodeId;
+	// LogInfo(msg.str());
 	//HaltPosition(g_pKeyHandle,g_usNodeId);
 
 }
