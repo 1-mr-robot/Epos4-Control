@@ -9,22 +9,31 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
 	arm_control=*params;
     unsigned int ulErrorCode = 0;
 	stringstream msg;
-	int absolute=1;
-	int relative=0;
 
-	msg << "set profile position mode, node = " << g_usNodeId;
+	msg << "set profile current mode, node = " << g_usNodeId<<"/n";
 	LogInfo(msg.str());
 
-    msg << "move to position = " << (long)arm_control.position << ", node = " << g_usNodeId;
+    msg << "move with torque = " << (long)arm_control.torque << ", node = " << g_usNodeId;
 	LogInfo(msg.str());
     
-    MoveToPosition(g_pKeyHandle, g_usNodeId, (long)arm_control.position,relative, &ulErrorCode);
+    SetCurrentMust(g_pKeyHandle,g_usNodeId,(short)arm_control.current,&ulErrorCode);
 
-	int position_new;
+    short current;
+	int position_new,current_velocity;
+    get_velocity(g_pKeyHandle,g_usNodeId,&current_velocity,&ulErrorCode);
+    // msg << "velocity read = " << current_velocity << ", node = " << g_usNodeId;
+    // LogInfo(msg.str());
+    get_current(g_pKeyHandle, g_usNodeId, &current, &ulErrorCode);
+
+    // res.current = current;
+	// res.position_new = position_new;
+	// res.velocity = pVelocityIs;
+
 	get_position(g_pKeyHandle, g_usNodeId, &position_new, &ulErrorCode);
-	msg << "new position = " << position_new << ", node = " << g_usNodeId;
-	LogInfo(msg.str());
+	// msg << "new position = " << position_new << ", node = " << g_usNodeId;
+	// LogInfo(msg.str());
 	//HaltPosition(g_pKeyHandle,g_usNodeId);
+    //HaltVelocity(g_pKeyHandle,g_usNodeId);
 
 }
 
@@ -59,7 +68,7 @@ int main(int argc, char **argv)
 		return lResult;
 	}
 	
-	if((lResult = ActivateProfilePositionMode(g_pKeyHandle,g_usNodeId,&ulErrorCode))!=MMC_SUCCESS)
+	if((lResult = ActivateProfileCurrentMode(g_pKeyHandle,g_usNodeId,&ulErrorCode))!=MMC_SUCCESS)
 	{
 		LogError("Activate Mode", lResult, ulErrorCode);
 		return lResult;

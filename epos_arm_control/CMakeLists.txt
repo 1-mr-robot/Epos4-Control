@@ -139,6 +139,8 @@ include_directories(
 add_executable(epos4 src/epos4.cpp)
 #add_executable(epos_skeleton src/epos_skeleton.cpp)
 add_executable(position_control src/position_control.cpp src/epos_skeleton.cpp)
+add_executable(velocity_control src/velocity_control.cpp src/epos_skeleton.cpp)
+add_executable(current_control src/current_control.cpp src/epos_skeleton.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -163,6 +165,15 @@ ${catkin_LIBRARIES}
 -lEposCmd
 )
 
+target_link_libraries(velocity_control
+${catkin_LIBRARIES}
+-lEposCmd
+)
+
+target_link_libraries(current_control
+${catkin_LIBRARIES}
+-lEposCmd
+)
 #############
 ## Install ##
 #############

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import rospy
-from beginner_tutorials.msg import epos
+from epos_arm_control.msg import epos
 from std_msgs.msg import Float64
 
-SPEED = 0
+VELOCITY = 0
 POSITION = 1
 CURRENT=2
-MODE = POSITION
+MODE = CURRENT
 
 def position_publish(x):
     pub = rospy.Publisher('exoskel_control', epos, queue_size=10)
@@ -18,6 +18,7 @@ def position_publish(x):
     if pos_vel.mode==0:
         pos_vel.velocity=x    
     elif pos_vel.mode==1:
+        pos_vel.angle=x
         pos_vel.position=x*16384*81/360
     elif pos_vel.mode==2:
         pos_vel.torque=x
