@@ -7,7 +7,7 @@ from std_msgs.msg import Float64
 VELOCITY = 0
 POSITION = 1
 CURRENT=2
-MODE = CURRENT
+MODE = POSITION
 
 def position_publish(x):
     pub = rospy.Publisher('exoskel_control', epos, queue_size=10)
