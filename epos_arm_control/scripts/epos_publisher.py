@@ -12,7 +12,7 @@ MODE = POSITION
 def position_publish(x):
     pub = rospy.Publisher('exoskel_control', epos, queue_size=10)
     rospy.init_node('epos_control', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    rate = rospy.Rate(25) # 10hz
     pos_vel=epos()
     pos_vel.mode = MODE
     if pos_vel.mode==0:

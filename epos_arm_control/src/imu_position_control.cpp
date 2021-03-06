@@ -2,10 +2,11 @@
 #include "epos4.h"
 #include <epos_arm_control/epos.h>
 #include <std_msgs/Float64MultiArray.h>
-#include <boost/ref.hpp>
+#include <std_msgs/Float64.h>
 
 epos_arm_control::epos arm_control;
 std_msgs::Float64MultiArray angle;
+ros::Publisher pub;
 
 
 void arrayCallback(const std_msgs::Float64MultiArray::ConstPtr& array)
@@ -33,7 +34,7 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
 	int absolute=1;
 	int relative=0;
 	int i;
-	float error;
+	std_msgs::Float64 error;
 	long error_inc;
 
 	msg << "set profile position mode, node = " << g_usNodeId<<"\n";
@@ -42,10 +43,11 @@ void moveArm(const epos_arm_control::epos::ConstPtr& params)
     msg << "move to position = " << (long)arm_control.position << ", node = " << g_usNodeId<<"\n";
 	LogInfo(msg.str());
 
-	error=arm_control.angle-angle.data[2];
-	error_inc=error*16384*81/360;
-    printf("error= %lf \n",error);
+	error.data=arm_control.angle-angle.data[2];
+	error_inc=error.data*16384*81/360;
+    printf("error= %lf \n",error.data);
     printf("Array value= %lf \n",angle.data[2]);
+	pub.publish(error);
 
     if(angle.data[2]>arm_control.angle-1 && angle.data[2]<arm_control.angle+1)
     {
@@ -99,9 +101,10 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "epos_imu_position");
 	ros::NodeHandle n;
 
-	// ros::Rate loop_rate(50);
-	ros::Subscriber sub1 = n.subscribe("shoulder_angle", 1000, arrayCallback);
+	//ros::Rate loop_rate(50);
+	ros::Subscriber sub1 = n.subscribe("flexion_angle", 1000, arrayCallback);
 	ros::Subscriber sub = n.subscribe("exoskel_control", 1000, moveArm);
+	pub=n.advertise<std_msgs::Float64>("pid_position",1000);
     
 	ros::spin();
 
