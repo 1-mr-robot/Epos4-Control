@@ -6,22 +6,21 @@
 
 epos_arm_control::epos arm_control;
 std_msgs::Float64MultiArray angle;
-ros::Publisher pub;
+std_msgs::Float64 error;
+
 
 
 void arrayCallback(const std_msgs::Float64MultiArray::ConstPtr& array)
 {
-	int i = 0;
 	angle=*array;
 
-    for(int j = 0; j < 3; j++)
-	{	
-		angle.data[j]=angle.data[j]*180/3.14;
-		printf("%lf, ", angle.data[j]);
-	}
-	
+    // for(int j = 0; j < 3; j++)
+	// {	
+	// 	printf("%lf, ", angle.data[j]);
+	// }
 
-	printf("\n");
+
+	// printf("\n");
 
 }
 
@@ -29,34 +28,32 @@ void arrayCallback(const std_msgs::Float64MultiArray::ConstPtr& array)
 void moveArm(const epos_arm_control::epos::ConstPtr& params)
 {
 	arm_control=*params;
-    unsigned int ulErrorCode = 0;
-	stringstream msg;
-	int absolute=1;
-	int relative=0;
-	int i;
-	std_msgs::Float64 error;
-	long error_inc;
+    // unsigned int ulErrorCode = 0;
+	// int absolute=1;
+	// int relative=0;
+	//int i;
+	//long error_inc;
 
-	msg << "set profile position mode, node = " << g_usNodeId<<"\n";
-	LogInfo(msg.str());
+	// msg << "set profile position mode, node = " << g_usNodeId<<"\n";
+	// LogInfo(msg.str());
 
-    msg << "move to position = " << (long)arm_control.position << ", node = " << g_usNodeId<<"\n";
-	LogInfo(msg.str());
+    // msg << "move to position = " << (long)arm_control.position << ", node = " << g_usNodeId<<"\n";
+	// LogInfo(msg.str());
 
-	error.data=arm_control.angle-angle.data[2];
-	error_inc=error.data*16384*81/360;
-    printf("error= %lf \n",error.data);
-    printf("Array value= %lf \n",angle.data[2]);
-	pub.publish(error);
+	// error.data=arm_control.angle-angle.data[2];
+	// error_inc=error.data*16384*81/360;
+    // printf("error= %lf \n",error.data);
+    // printf("Array value= %lf \n",angle.data[2]);
+	// pub.publish(error);
 
-    if(angle.data[2]>arm_control.angle-1 && angle.data[2]<arm_control.angle+1)
-    {
-		HaltPosition(g_pKeyHandle,g_usNodeId);
-    }
-    MoveToPosition(g_pKeyHandle, g_usNodeId, error_inc,relative, &ulErrorCode);
+    // if(angle.data[2]>arm_control.angle-1 && angle.data[2]<arm_control.angle+1)
+    // {
+	// 	HaltPosition(g_pKeyHandle,g_usNodeId);
+    // }
+    // MoveToPosition(g_pKeyHandle, g_usNodeId, error_inc,relative, &ulErrorCode);
 
-	int position_new;
-	get_position(g_pKeyHandle, g_usNodeId, &position_new, &ulErrorCode);
+	// int position_new;
+	// get_position(g_pKeyHandle, g_usNodeId, &position_new, &ulErrorCode);
 	//HaltPosition(g_pKeyHandle,g_usNodeId);
 
 }
@@ -67,6 +64,7 @@ int main(int argc, char **argv)
 {
 	int lResult = MMC_FAILED;
 	unsigned int ulErrorCode = 0;
+	long error_inc;
 
     // Print maxon headerline
     PrintHeader();
@@ -101,12 +99,49 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "epos_imu_position");
 	ros::NodeHandle n;
 
-	//ros::Rate loop_rate(50);
+
+	ros::Publisher pub=n.advertise<std_msgs::Float64>("pid_position",1000);
+	ros::Rate loop_rate(100);
 	ros::Subscriber sub1 = n.subscribe("flexion_angle", 1000, arrayCallback);
 	ros::Subscriber sub = n.subscribe("exoskel_control", 1000, moveArm);
-	pub=n.advertise<std_msgs::Float64>("pid_position",1000);
+	
     
-	ros::spin();
+	while(ros::ok())
+	{
+		// printf("Entered while loop");
+		if(arm_control.mode == 1)
+		{
+			stringstream msg;
+			int absolute=1;
+			int relative=0;
+			float Kp=1;
+
+			msg << "move to position = " << (long)arm_control.angle << ", node = " << g_usNodeId<<"\n";
+			LogInfo(msg.str());
+
+			error.data=-(arm_control.angle-angle.data[2]);
+			error_inc=Kp*error.data*16384*81/360;
+    		printf("error= %lf \n",error.data);
+
+			if(angle.data[2]>arm_control.angle-0.5 && angle.data[2]<arm_control.angle+0.5)
+    		{
+				HaltPosition(g_pKeyHandle,g_usNodeId);
+    		}
+			else
+			{
+				MoveToPosition(g_pKeyHandle, g_usNodeId, error_inc,relative, &ulErrorCode);
+			}
+		}
+		// else
+		// {
+		// 	SetDisableState(g_pKeyHandle, g_usNodeId, &ulErrorCode);
+		// }
+		
+	pub.publish(error);
+	ros::spinOnce();
+
+	}
+	// ros::spin();
 
 	//disable epos
 	SetDisableState(g_pKeyHandle, g_usNodeId, &ulErrorCode);
