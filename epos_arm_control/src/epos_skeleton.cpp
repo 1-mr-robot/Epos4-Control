@@ -287,6 +287,59 @@ void get_PositionProfile(HANDLE p_DeviceHandle, unsigned short p_usNodeId, unsig
 	LogInfo(msg.str());
 }
 
+void set_PositionProfile(HANDLE p_DeviceHandle,unsigned short p_usNodeId, unsigned int pProfileVelocity,unsigned int pProfileAcceleration,unsigned int pProfileDeceleration, unsigned int* p_pErrorCode)
+{
+	stringstream msg;
+	int lResult = MMC_SUCCESS;
+	//unsigned int pProfileVelocity, pProfileAcceleration, pProfileDeceleration, pErrorCode;
+	unsigned int pErrorCode;
+	if(VCS_SetPositionProfile(p_DeviceHandle, p_usNodeId, pProfileVelocity, pProfileAcceleration, pProfileDeceleration, &pErrorCode) == 0)
+	{
+		LogError("VCS_SetPositionProfile", lResult, *p_pErrorCode);
+		lResult = MMC_FAILED;
+	}
+	msg << "\n" 
+		<< "pProfileVelocitySet," << pProfileVelocity 
+		<< "pProfileAccelerationSet," << pProfileAcceleration 
+		<< "pProfileDecelerationSet," << pProfileDeceleration 
+		<< "pErrorCode" << pErrorCode;
+	LogInfo(msg.str());	
+}
+
+void get_VelocityProfile(HANDLE p_DeviceHandle, unsigned short p_usNodeId, unsigned int* p_pErrorCode)
+{
+	stringstream msg;
+	int lResult = MMC_SUCCESS;
+	unsigned int pProfileAcceleration, pProfileDeceleration, pErrorCode;
+	if(VCS_GetVelocityProfile(p_DeviceHandle, p_usNodeId,&pProfileAcceleration, &pProfileDeceleration, &pErrorCode) == 0)
+	{
+		LogError("VCS_GetVelocityProfile", lResult, *p_pErrorCode);
+		lResult = MMC_FAILED;
+	}
+	msg << "\n" 
+		<< "pProfileAcceleration," << pProfileAcceleration 
+		<< "pProfileDeceleration," << pProfileDeceleration 
+		<< "pErrorCode" << pErrorCode;
+	LogInfo(msg.str());
+}
+
+void set_VelocityProfile(HANDLE p_DeviceHandle,unsigned short p_usNodeId, unsigned int pProfileAcceleration,unsigned int pProfileDeceleration, unsigned int* p_pErrorCode)
+ {
+	stringstream msg;
+	int lResult = MMC_SUCCESS;
+	unsigned int pErrorCode;
+	if(VCS_SetVelocityProfile(p_DeviceHandle, p_usNodeId, pProfileAcceleration, pProfileDeceleration, &pErrorCode) == 0)
+	{
+		LogError("VCS_SetVelocityProfile", lResult, *p_pErrorCode);
+		lResult = MMC_FAILED;
+	}
+	msg << "\n" 
+		<< "pProfileAccelerationSet," << pProfileAcceleration 
+		<< "pProfileDecelerationSet," << pProfileDeceleration 
+		<< "pErrorCode" << pErrorCode;
+	LogInfo(msg.str());	
+}
+
 void get_velocity(HANDLE p_DeviceHandle, unsigned short p_usNodeId, int* pVelocityIs, unsigned int* p_pErrorCode)
 {
 	int lResult = MMC_SUCCESS;

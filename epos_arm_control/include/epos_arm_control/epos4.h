@@ -64,6 +64,9 @@ int ActivateProfileCurrentMode(HANDLE p_DeviceHandle, unsigned short p_usNodeId,
 void SetDefaultParameters();
 void get_position(HANDLE p_DeviceHandle, unsigned short p_usNodeId, int* pPositionIs, unsigned int* p_pErrorCode);
 void get_PositionProfile(HANDLE p_DeviceHandle, unsigned short p_usNodeId, unsigned int* p_pErrorCode);
+void set_PositionProfile(HANDLE p_DeviceHandle,unsigned short p_usNodeId, unsigned int pProfileVelocity,unsigned int pProfileAcceleration,unsigned int pProfileDeceleration, unsigned int* p_pErrorCode);
+void get_VelocityProfile(HANDLE p_DeviceHandle, unsigned short p_usNodeId, unsigned int* p_pErrorCode);
+void set_VelocityProfile(HANDLE p_DeviceHandle,unsigned short p_usNodeId, unsigned int pProfileAcceleration,unsigned int pProfileDeceleration, unsigned int* p_pErrorCode);
 void get_velocity(HANDLE p_DeviceHandle, unsigned short p_usNodeId, int* pVelocityIs, unsigned int* p_pErrorCode);
 void get_TargetVelocity(void* g_pKeyHandle, unsigned short g_usNodeId, unsigned int* ulErrorCode);// only print
 void get_current(HANDLE p_DeviceHandle, unsigned short p_usNodeId, short* pCurrentMust, unsigned int* p_pErrorCode);

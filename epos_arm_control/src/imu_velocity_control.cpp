@@ -68,7 +68,6 @@ int main(int argc, char **argv)
 	long error_inc;
 	float proportional;
 	float derivative;
-	unsigned int ProfileVelocity=100, ProfileAcceleration=100, ProfileDeceleration=100;
 
     // Print maxon headerline
     PrintHeader();
@@ -94,14 +93,13 @@ int main(int argc, char **argv)
 		return lResult;
 	}
 	
-	if((lResult = ActivateProfilePositionMode(g_pKeyHandle,g_usNodeId,&ulErrorCode))!=MMC_SUCCESS)
+	if((lResult = ActivateProfileVelocityMode(g_pKeyHandle,g_usNodeId,&ulErrorCode))!=MMC_SUCCESS)
 	{
 		LogError("Activate Mode", lResult, ulErrorCode);
 		return lResult;
 	}
 
-	set_PositionProfile(g_pKeyHandle,g_usNodeId,ProfileVelocity,ProfileAcceleration,ProfileDeceleration,&ulErrorCode);
-
+    // get_VelocityProfile(g_pKeyHandle,g_usNodeId,&ulErrorCode);
 	ros::init(argc, argv, "epos_imu_position");
 	ros::NodeHandle n;
 
@@ -120,12 +118,13 @@ int main(int argc, char **argv)
 			stringstream msg;
 			int absolute=1;
 			int relative=0;
-			float Kp=1;
-			float Kd=0.0007;
-			float desired_angle=0;
-			long desired_inc=0;
+			float Kp=10;
+			float Kd=0;
+			//float desired_angle=0;
+			//long desired_inc=0;
 			// long velocity= 10;
-			// int current_velocity;
+			int current_velocity;
+            long desired_velocity;
 
 
 			msg << "move to position = " << (long)arm_control.angle << ", node = " << g_usNodeId<<"\n";
@@ -143,23 +142,27 @@ int main(int argc, char **argv)
 			error_prev.data=error.data;
 
 			//desired_angle=proportional;
-			desired_angle=proportional+derivative;
-			desired_inc=desired_angle*16384*81/360;
+			desired_velocity=proportional+derivative;
+            if(desired_velocity>400)
+            {
+                desired_velocity=400;
+            }
+            else if (desired_velocity<-400)
+            {
+                desired_velocity=-400;
+            }
 
     		printf("error= %lf \n",error.data);
 
 			if(angle.data[2]>arm_control.angle-0.2 && angle.data[2]<arm_control.angle+0.2)
     		{
-				//HaltVelocity(g_pKeyHandle,g_usNodeId);
-				HaltPosition(g_pKeyHandle,g_usNodeId);
+				HaltVelocity(g_pKeyHandle,g_usNodeId);
 				
     		}
 			else
-			{
-				// MoveWithVelocity(g_pKeyHandle, g_usNodeId,velocity,&ulErrorCode);
-				// get_velocity(g_pKeyHandle,g_usNodeId,&current_velocity,&ulErrorCode);
-				MoveToPosition(g_pKeyHandle, g_usNodeId, desired_inc,relative, &ulErrorCode);
-				get_PositionProfile(g_pKeyHandle,g_usNodeId,&ulErrorCode);
+			{   
+				MoveWithVelocity(g_pKeyHandle, g_usNodeId,desired_velocity,&ulErrorCode);
+				get_velocity(g_pKeyHandle,g_usNodeId,&current_velocity,&ulErrorCode);
 			}
 		}
 		// else

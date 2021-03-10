@@ -142,6 +142,7 @@ add_executable(position_control src/position_control.cpp src/epos_skeleton.cpp)
 add_executable(velocity_control src/velocity_control.cpp src/epos_skeleton.cpp)
 add_executable(current_control src/current_control.cpp src/epos_skeleton.cpp)
 add_executable(imu_position_control src/imu_position_control.cpp src/epos_skeleton.cpp)
+add_executable(imu_velocity_control src/imu_velocity_control.cpp src/epos_skeleton.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -177,6 +178,11 @@ ${catkin_LIBRARIES}
 )
 
 target_link_libraries(imu_position_control
+${catkin_LIBRARIES}
+-lEposCmd
+)
+
+target_link_libraries(imu_velocity_control
 ${catkin_LIBRARIES}
 -lEposCmd
 )
