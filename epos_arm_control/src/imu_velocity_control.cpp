@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 	}
 
     // get_VelocityProfile(g_pKeyHandle,g_usNodeId,&ulErrorCode);
-	ros::init(argc, argv, "epos_imu_position");
+	ros::init(argc, argv, "epos_imu_velocity");
 	ros::NodeHandle n;
 
 
