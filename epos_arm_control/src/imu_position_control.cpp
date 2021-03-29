@@ -13,49 +13,16 @@ std_msgs::Float64 error_prev;
 
 void arrayCallback(const std_msgs::Float64MultiArray::ConstPtr& array)
 {
+
 	angle=*array;
-
-    // for(int j = 0; j < 3; j++)
-	// {	
-	// 	printf("%lf, ", angle.data[j]);
-	// }
-
-
-	// printf("\n");
 
 }
 
 
 void moveArm(const epos_arm_control::epos::ConstPtr& params)
 {
+
 	arm_control=*params;
-    // unsigned int ulErrorCode = 0;
-	// int absolute=1;
-	// int relative=0;
-	//int i;
-	//long error_inc;
-
-	// msg << "set profile position mode, node = " << g_usNodeId<<"\n";
-	// LogInfo(msg.str());
-
-    // msg << "move to position = " << (long)arm_control.position << ", node = " << g_usNodeId<<"\n";
-	// LogInfo(msg.str());
-
-	// error.data=arm_control.angle-angle.data[2];
-	// error_inc=error.data*16384*81/360;
-    // printf("error= %lf \n",error.data);
-    // printf("Array value= %lf \n",angle.data[2]);
-	// pub.publish(error);
-
-    // if(angle.data[2]>arm_control.angle-1 && angle.data[2]<arm_control.angle+1)
-    // {
-	// 	HaltPosition(g_pKeyHandle,g_usNodeId);
-    // }
-    // MoveToPosition(g_pKeyHandle, g_usNodeId, error_inc,relative, &ulErrorCode);
-
-	// int position_new;
-	// get_position(g_pKeyHandle, g_usNodeId, &position_new, &ulErrorCode);
-	//HaltPosition(g_pKeyHandle,g_usNodeId);
 
 }
 
@@ -124,25 +91,17 @@ int main(int argc, char **argv)
 			float Kd=0.0007;
 			float desired_angle=0;
 			long desired_inc=0;
-			// long velocity= 10;
-			// int current_velocity;
 
 
 			msg << "move to position = " << (long)arm_control.angle << ", node = " << g_usNodeId<<"\n";
 			LogInfo(msg.str());
 
-			// error.data=(arm_control.angle-angle.data[2]);
 			error.data=(arm_control.angle-angle.data[2]);
-			// error_inc=error.data*16384*81/360;
 
 			proportional=Kp*error.data;
-			//proportional=Kp*error_inc;
-			// derivative=Kd*((error_inc-error_prev.data)/0.005);
-			// error_prev.data=error_inc;
 			derivative=Kd*((error.data-error_prev.data)/0.005);
 			error_prev.data=error.data;
 
-			//desired_angle=proportional;
 			desired_angle=proportional+derivative;
 			desired_inc=desired_angle*16384*81/360;
 
@@ -156,16 +115,10 @@ int main(int argc, char **argv)
     		}
 			else
 			{
-				// MoveWithVelocity(g_pKeyHandle, g_usNodeId,velocity,&ulErrorCode);
-				// get_velocity(g_pKeyHandle,g_usNodeId,&current_velocity,&ulErrorCode);
 				MoveToPosition(g_pKeyHandle, g_usNodeId, desired_inc,relative, &ulErrorCode);
 				get_PositionProfile(g_pKeyHandle,g_usNodeId,&ulErrorCode);
 			}
 		}
-		// else
-		// {
-		// 	SetDisableState(g_pKeyHandle, g_usNodeId, &ulErrorCode);
-		// }
 		
 	pub.publish(error);
 	ros::spinOnce();
