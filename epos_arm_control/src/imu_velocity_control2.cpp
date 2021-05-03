@@ -43,31 +43,33 @@ int main(int argc, char **argv)
 	SetDefaultParameters();
 
     //Print default parameters
-    PrintSettings();
+    PrintSettings2();
 
 
 	// open device
-	if((lResult = OpenDevice(&ulErrorCode))!=MMC_SUCCESS)
+	if((lResult = OpenDevice2(&ulErrorCode))!=MMC_SUCCESS)
 	{
-		LogError("OpenDevice", lResult, ulErrorCode);
+		LogError("OpenDevice2", lResult, ulErrorCode);
 		return lResult;
 	}
+    VCS_ClearFault(g_pKeyHandle2, g_usNodeId2, &ulErrorCode);
+    // printf("Fault Cleared");
 
     // set enable state
-	if((lResult = SetEnableState(g_pKeyHandle,g_usNodeId,&ulErrorCode))!=MMC_SUCCESS)
+	if((lResult = SetEnableState(g_pKeyHandle2,g_usNodeId2,&ulErrorCode))!=MMC_SUCCESS)
 	{
 		LogError("EnableState", lResult, ulErrorCode);
 		return lResult;
 	}
 	
-	if((lResult = ActivateProfileVelocityMode(g_pKeyHandle,g_usNodeId,&ulErrorCode))!=MMC_SUCCESS)
+	if((lResult = ActivateProfileVelocityMode(g_pKeyHandle2,g_usNodeId2,&ulErrorCode))!=MMC_SUCCESS)
 	{
 		LogError("Activate Mode", lResult, ulErrorCode);
 		return lResult;
 	}
 
     // get_VelocityProfile(g_pKeyHandle,g_usNodeId,&ulErrorCode);
-	ros::init(argc, argv, "epos_imu_velocity");
+	ros::init(argc, argv, "epos_imu_velocity2");
 	ros::NodeHandle n;
 
 
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
             long desired_velocity;
 
 
-			msg << "move to position = " << (long)arm_control.angle << ", node = " << g_usNodeId<<"\n";
+			msg << "move to position = " << (long)arm_control.angle << ", node = " << g_usNodeId2<<"\n";
 			LogInfo(msg.str());
 
 			error.data=(arm_control.angle-angle.data[2]);
@@ -115,13 +117,13 @@ int main(int argc, char **argv)
 
 			if(angle.data[2]>arm_control.angle-0.2 && angle.data[2]<arm_control.angle+0.2)
     		{
-				HaltVelocity(g_pKeyHandle,g_usNodeId);
+				HaltVelocity(g_pKeyHandle2,g_usNodeId2);
 				
     		}
 			else
 			{   
-				MoveWithVelocity(g_pKeyHandle, g_usNodeId,desired_velocity,&ulErrorCode);
-				get_velocity(g_pKeyHandle,g_usNodeId,&current_velocity,&ulErrorCode);
+				MoveWithVelocity(g_pKeyHandle2, g_usNodeId2,desired_velocity,&ulErrorCode);
+				get_velocity(g_pKeyHandle2,g_usNodeId2,&current_velocity,&ulErrorCode);
 			}
 		}
 
@@ -132,11 +134,11 @@ int main(int argc, char **argv)
 	// ros::spin();
 
 	//disable epos
-	SetDisableState(g_pKeyHandle, g_usNodeId, &ulErrorCode);
+	SetDisableState(g_pKeyHandle2, g_usNodeId2, &ulErrorCode);
 	//close device
-	if((lResult = CloseDevice(&ulErrorCode))!=MMC_SUCCESS)
+	if((lResult = CloseDevice2(&ulErrorCode))!=MMC_SUCCESS)
 	{
-		LogError("CloseDevice", lResult, ulErrorCode);
+		LogError("CloseDevice2", lResult, ulErrorCode);
 		return lResult;
 	}
 	return 0;

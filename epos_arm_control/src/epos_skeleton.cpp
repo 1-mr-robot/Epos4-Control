@@ -1,14 +1,17 @@
 #include "epos4.h"
 
 void* g_pKeyHandle;
-//void* g_pKeyHandle2;
+void* g_pKeyHandle2;
+void* g_pKeyHandle3;
 unsigned short g_usNodeId;
-//unsigned short g_usNodeId2;
+unsigned short g_usNodeId2;
+unsigned short g_usNodeId3;
 string g_deviceName;
 string g_protocolStackName;
 string g_interfaceName;
 string g_portName;
-//string g_portName2;
+string g_portName2;
+string g_portName3;
 int g_baudrate;
 
 const string g_programName = "Epos4 Control";
@@ -59,6 +62,40 @@ void PrintSettings()
 	SeparatorLine();
 }
 
+void PrintSettings2()
+{
+	stringstream msg;
+
+	msg << "default settings:" << endl;
+	msg << "node id             = " << g_usNodeId2 << endl;
+	msg << "device name         = '" << g_deviceName << "'" << endl;
+	msg << "protocal stack name = '" << g_protocolStackName << "'" << endl;
+	msg << "interface name      = '" << g_interfaceName << "'" << endl;
+	msg << "port name           = '" << g_portName2 << "'"<< endl;
+	msg << "baudrate            = " << g_baudrate;
+
+	LogInfo(msg.str());
+
+	SeparatorLine();
+}
+
+void PrintSettings3()
+{
+	stringstream msg;
+
+	msg << "default settings:" << endl;
+	msg << "node id             = " << g_usNodeId3 << endl;
+	msg << "device name         = '" << g_deviceName << "'" << endl;
+	msg << "protocal stack name = '" << g_protocolStackName << "'" << endl;
+	msg << "interface name      = '" << g_interfaceName << "'" << endl;
+	msg << "port name           = '" << g_portName3 << "'"<< endl;
+	msg << "baudrate            = " << g_baudrate;
+
+	LogInfo(msg.str());
+
+	SeparatorLine();
+}
+
 void SetDefaultParameters()
 {
 	//USB
@@ -67,12 +104,14 @@ void SetDefaultParameters()
 	// but if we get the node id wrong, it fails to write command to epos2 
 
 	g_usNodeId = 1;
-	//g_usNodeId2 = 2;
+	g_usNodeId2 = 2;
+	g_usNodeId3 = 3;
 	g_deviceName = "EPOS4"; //EPOS version
 	g_protocolStackName = "MAXON SERIAL V2"; //MAXON_RS232
 	g_interfaceName = "USB"; //RS232
 	g_portName = "USB0"; // /dev/ttyS1
-	//g_portName2 = "USB1";
+	g_portName2 = "USB1";
+	g_portName3 = "USB2";
 	g_baudrate = 1000000; //115200
 }
 
@@ -126,11 +165,110 @@ int OpenDevice(unsigned int* p_pErrorCode)
 	return lResult;
 }
 
+int OpenDevice2(unsigned int* p_pErrorCode)
+{
+	int lResult = MMC_FAILED;
+
+	char* pDeviceName = new char[255];
+	char* pProtocolStackName = new char[255];
+	char* pInterfaceName = new char[255];
+	char* pPortName = new char[255];
+
+	strcpy(pDeviceName, g_deviceName.c_str());
+	strcpy(pProtocolStackName, g_protocolStackName.c_str());
+	strcpy(pInterfaceName, g_interfaceName.c_str());
+	strcpy(pPortName, g_portName2.c_str());
+
+	LogInfo("Open device...");
+
+	g_pKeyHandle2 = VCS_OpenDevice(pDeviceName, pProtocolStackName, pInterfaceName, pPortName, p_pErrorCode);
+
+	if(g_pKeyHandle2!=0 && *p_pErrorCode == 0)
+	{
+		unsigned int lBaudrate = 0;
+		unsigned int lTimeout = 0;
+
+		if(VCS_GetProtocolStackSettings(g_pKeyHandle2, &lBaudrate, &lTimeout, p_pErrorCode)!=0)
+		{
+			if(VCS_SetProtocolStackSettings(g_pKeyHandle2, g_baudrate, lTimeout, p_pErrorCode)!=0)
+			{
+				if(VCS_GetProtocolStackSettings(g_pKeyHandle2, &lBaudrate, &lTimeout, p_pErrorCode)!=0)
+				{
+					if(g_baudrate==(int)lBaudrate)
+					{
+						lResult = MMC_SUCCESS;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		g_pKeyHandle2 = 0;
+	}
+	// printf("g_pkeyhndle2 is %p",g_pKeyHandle2);
+	delete []pDeviceName;
+	delete []pProtocolStackName;
+	delete []pInterfaceName;
+	delete []pPortName;
+
+	return lResult;
+}
+
+int OpenDevice3(unsigned int* p_pErrorCode)
+{
+	int lResult = MMC_FAILED;
+
+	char* pDeviceName = new char[255];
+	char* pProtocolStackName = new char[255];
+	char* pInterfaceName = new char[255];
+	char* pPortName = new char[255];
+
+	strcpy(pDeviceName, g_deviceName.c_str());
+	strcpy(pProtocolStackName, g_protocolStackName.c_str());
+	strcpy(pInterfaceName, g_interfaceName.c_str());
+	strcpy(pPortName, g_portName3.c_str());
+
+	LogInfo("Open device...");
+
+	g_pKeyHandle3 = VCS_OpenDevice(pDeviceName, pProtocolStackName, pInterfaceName, pPortName, p_pErrorCode);
+
+	if(g_pKeyHandle3!=0 && *p_pErrorCode == 0)
+	{
+		unsigned int lBaudrate = 0;
+		unsigned int lTimeout = 0;
+
+		if(VCS_GetProtocolStackSettings(g_pKeyHandle3, &lBaudrate, &lTimeout, p_pErrorCode)!=0)
+		{
+			if(VCS_SetProtocolStackSettings(g_pKeyHandle3, g_baudrate, lTimeout, p_pErrorCode)!=0)
+			{
+				if(VCS_GetProtocolStackSettings(g_pKeyHandle3, &lBaudrate, &lTimeout, p_pErrorCode)!=0)
+				{
+					if(g_baudrate==(int)lBaudrate)
+					{
+						lResult = MMC_SUCCESS;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		g_pKeyHandle3 = 0;
+	}
+	delete []pDeviceName;
+	delete []pProtocolStackName;
+	delete []pInterfaceName;
+	delete []pPortName;
+
+	return lResult;
+}
+
 int SetEnableState(void* g_pKeyHandle, unsigned short g_usNodeId, unsigned int* p_pErrorCode)
 {
 	int lResult = MMC_SUCCESS;
 	BOOL oIsFault = 0;
-
+	// printf("g_pkeyhndle2 is %p",g_pKeyHandle);
 	if(VCS_GetFaultState(g_pKeyHandle, g_usNodeId, &oIsFault, p_pErrorCode ) == 0)
 	{
 		LogError("VCS_GetFaultState", lResult, *p_pErrorCode);
@@ -179,6 +317,7 @@ int SetEnableState(void* g_pKeyHandle, unsigned short g_usNodeId, unsigned int* 
 	return lResult;
 }
 
+
 int SetDisableState(void* g_pKeyHandle, unsigned short g_usNodeId, unsigned int* pErrorCode)
 {
 	int lResult = MMC_SUCCESS;
@@ -201,6 +340,38 @@ int CloseDevice(unsigned int* p_pErrorCode)
 	LogInfo("Close device");
 
 	if(VCS_CloseDevice(g_pKeyHandle, p_pErrorCode)!=0 && *p_pErrorCode == 0)
+	{
+		lResult = MMC_SUCCESS;
+	}
+
+	return lResult;
+}
+
+int CloseDevice2(unsigned int* p_pErrorCode)
+{
+	int lResult = MMC_FAILED;
+
+	*p_pErrorCode = 0;
+
+	LogInfo("Close device");
+
+	if(VCS_CloseDevice(g_pKeyHandle2, p_pErrorCode)!=0 && *p_pErrorCode == 0)
+	{
+		lResult = MMC_SUCCESS;
+	}
+
+	return lResult;
+}
+
+int CloseDevice3(unsigned int* p_pErrorCode)
+{
+	int lResult = MMC_FAILED;
+
+	*p_pErrorCode = 0;
+
+	LogInfo("Close device");
+
+	if(VCS_CloseDevice(g_pKeyHandle3, p_pErrorCode)!=0 && *p_pErrorCode == 0)
 	{
 		lResult = MMC_SUCCESS;
 	}

@@ -30,14 +30,17 @@ using namespace std;
 #endif
 
 extern void* g_pKeyHandle;
-//extern void* g_pKeyHandle2;
+extern void* g_pKeyHandle2;
+extern void* g_pKeyHandle3;
 extern unsigned short g_usNodeId;
-//extern unsigned short g_usNodeId2;
+extern unsigned short g_usNodeId2;
+extern unsigned short g_usNodeId3;
 extern string g_deviceName;
 extern string g_protocolStackName;
 extern string g_interfaceName;
 extern string g_portName;
-//extern string g_portName2;
+extern string g_portName2;
+extern string g_portName3;
 extern int g_baudrate ;
 
 typedef void* HANDLE;
@@ -49,13 +52,17 @@ void LogError(string functionName, int p_lResult, unsigned int p_ulErrorCode);
 //void  PrintUsage();
 void  PrintHeader();
 void  PrintSettings();
+void  PrintSettings2();
+void  PrintSettings3();
 
 int OpenDevice(unsigned int* p_pErrorCode);
-// int OpenDevice2(unsigned int* p_pErrorCode);
+int OpenDevice2(unsigned int* p_pErrorCode);
+int OpenDevice3(unsigned int* p_pErrorCode);
 int SetEnableState(void* g_pKeyHandle, unsigned short g_usNodeId, unsigned int* p_pErrorCode);
 int SetDisableState(void* g_pKeyHandle, unsigned short g_usNodeId, unsigned int* pErrorCode);
 int CloseDevice(unsigned int* p_pErrorCode);// if not close epos, it will keep at position or velocity
-//int CloseDevice2(unsigned int* p_pErrorCode);
+int CloseDevice2(unsigned int* p_pErrorCode);
+int CloseDevice3(unsigned int* p_pErrorCode);
 
 int ActivateProfilePositionMode(HANDLE p_DeviceHandle, unsigned short p_usNodeId, unsigned int* p_rlErrorCode);
 int ActivateProfileVelocityMode(HANDLE p_DeviceHandle, unsigned short p_usNodeId, unsigned int* p_rlErrorCode);
